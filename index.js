@@ -22,8 +22,6 @@ const socketIO = require('socket.io')(http, {
   
 app.use(cors());
 
-
-
 socketIO.on('connection', (socket) => {
     // console.log(`${socket.id} Connected`)
     // socketIO.emit('tesst',`Ураааа!!! ${socket.id} подключился!!!`)  
@@ -37,9 +35,8 @@ pool.query('SELECT NOW()', (err, res) => {
   }
 });
 
-
-
 app.get('/test', cors(), async(req,res)=>{
+    console.log('tested')
     try {
         const result = await pool.query(``);
         res.status(200).json(result.rows);
@@ -362,6 +359,24 @@ app.get('/stopEncounter',cors(), async(req,res)=>{
     }
     socketIO.emit('stopEncounter',true)
     res.send('stopped')
+})
+
+app.post('/addLvl',cors(),async(req, res) => {
+    try{
+        console.log(req.body)
+        const charname = req.body.char_name
+        const currentEXP = req.body.currentEXP
+        const potentialEXP = req.body.potentialEXP
+
+        console.log(charname,currentEXP,potentialEXP)
+        const result = await pool.query(`SELECT level, "xp_value" FROM xp_levels where "xp_value" <= ${potentialEXP} \nORDER BY "xp_value" DESC limit 1`)
+
+        await pool.query(`UPDATE characters SET "LVL"=${result.rows[0].level} WHERE "char_name"='${charname}'`)
+        socketIO.emit('needUpdateCharactersData',true)
+        res.send(`to lvl ${(result.rows[0].level)} you need:${result.rows[0].xp_value} EXP`)
+    }catch(e){
+        console.log(e)
+    }
 })
 
 
