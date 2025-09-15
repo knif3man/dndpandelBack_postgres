@@ -16,11 +16,13 @@ app.use(express.json());
 
 const socketIO = require('socket.io')(http, {
     cors: {
-        origin: "*"
+        origin: "*",
     }
   });
   
 app.use(cors());
+
+
 
 socketIO.on('connection', (socket) => {
     // console.log(`${socket.id} Connected`)
@@ -379,6 +381,9 @@ app.post('/addLvl',cors(),async(req, res) => {
     }
 })
 
+app.get('/q',cors(),async(req, res) => {
+    res.send('asfjda')
+})
 
 http.listen(process.env.PORT || 3000, () => {
     console.log(`Server listening on ${process.env.PORT}`);
