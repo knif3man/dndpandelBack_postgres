@@ -371,11 +371,13 @@ app.post('/addLvl',cors(),async(req, res) => {
         const potentialEXP = req.body.potentialEXP
 
         console.log(charname,currentEXP,potentialEXP)
-        const result = await pool.query(`SELECT level, "xp_value" FROM xp_levels where "xp_value" <= ${potentialEXP} \nORDER BY "xp_value" DESC limit 1`)
-
-        await pool.query(`UPDATE characters SET "LVL"=${result.rows[0].level} WHERE "char_name"='${charname}'`)
-        socketIO.emit('needUpdateCharactersData',true)
-        res.send(`to lvl ${(result.rows[0].level)} you need:${result.rows[0].xp_value} EXP`)
+        if(potentialEXP){
+            const result = await pool.query(`SELECT level, "xp_value" FROM xp_levels where "xp_value" <= ${potentialEXP} \nORDER BY "xp_value" DESC limit 1`)
+            await pool.query(`UPDATE characters SET "LVL"=${result.rows[0].level} WHERE "char_name"='${charname}'`)
+            socketIO.emit('needUpdateCharactersData',true)
+            res.send(`to lvl ${(result.rows[0].level)} you need:${result.rows[0].xp_value} EXP`)
+        }
+        res.send('ok')
     }catch(e){
         console.log(e)
     }
