@@ -383,6 +383,15 @@ app.post('/addLvl',cors(),async(req, res) => {
     }
 })
 
+app.get('/getDeceasedCharacters', cors(), async(req,res)=>{
+    try{
+        const result = await pool.query(`SELECT char_name,"LVL","GOLD" FROM characters WHERE char_name LIKE '%RIP'`)
+        res.send(JSON.stringify(result.rows))
+    } catch(e) {
+        console.log(e)
+    }
+})
+
 app.get('/q',cors(),async(req, res) => {
     res.send('asfjda')
 })
